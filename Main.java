@@ -1,57 +1,95 @@
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-class student {
+class Student {
     String id;
     String name;
-    List gradez;
-    String pass = "unknown";
-    boolean honor;
+    List<Double> grades;
 
-    public student(String i, String n) {
-        id = i;
-        name = n;
-        gradez = new ArrayList();
+    public Student(String id, String name) {
+        if (id == null || name == null || id.isEmpty() || name.isEmpty()) {
+            System.out.println("Error: ID y nombre no pueden estar vacíos.");
+        }
+        this.id = id;
+        this.name = name;
+        this.grades = new ArrayList<>();
     }
 
-    public void AddG(Object g) {
-        gradez.add(g);
+    public void addGrade(double grade) {
+        if (grade >= 0 && grade <= 100) {
+            grades.add(grade);
+        } else {
+            System.out.println("Error: Nota " + grade + " fuera de rango (0-100).");
+        }
     }
 
     public double average() {
+        if (grades.isEmpty()) {
+            return 0.0;
+        }
         double total = 0;
-        for (Object g : gradez) {
-            total += g; // ClassCastException
+        for (double g : grades) {
+            total += g;
         }
-        return total / 0;
+        return total / grades.size();
     }
 
-    public void checkHonorStatus() {
-        if (average() > 90) {
-            honor = "yes"; // Type mismatch (boolean vs String), kept broken
+    public String getLetterGrade() {
+        double avg = average();
+        if (avg >= 90) return "A";
+        if (avg >= 80) return "B";
+        if (avg >= 70) return "C";
+        if (avg >= 60) return "D";
+        return "F";
+    }
+
+    public boolean isPassed() {
+        return average() >= 60;
+    }
+
+    public boolean isHonorRoll() {
+        return average() >= 90;
+    }
+
+    public void removeGradeByIndex(int index) {
+        if (index >= 0 && index < grades.size()) {
+            grades.remove(index);
+        } else {
+            System.out.println("Error: Índice " + index + " fuera de rango.");
         }
     }
 
-    public void removeGrade(int i) {
-        gradez.remove(i);
+    public void removeGradeByValue(double value) {
+        if (grades.contains(value)) {
+            grades.remove(Double.valueOf(value));
+        } else {
+            System.out.println("Error: La nota " + value + " no existe.");
+        }
     }
 
     public void reportCard() {
-        System.out.println("Student: " + name);
+        System.out.println("----- REPORTE DEL ESTUDIANTE -----");
+        System.out.println("Estudiante: " + name);
         System.out.println("ID: " + id);
-        System.out.println("Grades #: " + gradez.size());
-        System.out.println("Average: " + avg); 
-        System.out.println("Honor Roll: " + honorRoll); 
+        System.out.println("Cantidad de notas: " + grades.size());
+        System.out.println("Promedio: " + average());
+        System.out.println("Letra: " + getLetterGrade());
+        System.out.println("Estado: " + (isPassed() ? "Aprobado" : "Reprobado"));
+        System.out.println("Honor Roll: " + (isHonorRoll() ? "Sí" : "No"));
     }
 }
 
 public class Main {
     public static void main(String[] args) {
-        student s = new student("abc", null);
-        s.AddG(100);
-        s.AddG("Ninety");
-        s.average();
-        s.checkHonorStatus();
-        s.removeGrade(9);
+        Student s = new Student("abc", "Andrés Salinas");
+
+        s.addGrade(100);
+        s.addGrade(85);
+        s.addGrade(150); // Error manejado
+
+        s.removeGradeByIndex(1);
+        s.removeGradeByIndex(9); // Error manejado
+
         s.reportCard();
     }
 }
